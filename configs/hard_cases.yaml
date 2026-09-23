@@ -7,17 +7,18 @@ output:
   count: 200
   formats: [coco, yolo]
 blender: {binary: null, samples: 24, engine: BLENDER_EEVEE}
+assets: {tile_blend: ./assets/blender/tiles_master.blend, mat_blend: ./assets/masters/table_assets.blend}
 scene:
   mode: random
-  background: {enabled: true, path: ./assets/backgrounds}
-  camera: {distance_range: [8.0, 13.0], tilt_deg_range: [25, 55], yaw_deg_range: [-45, 45], roll_deg_range: [-15, 15]}
+  background: {enabled: false, path: ./assets/backgrounds}
+  camera: {distance_range: [0.42, 0.78], tilt_deg_range: [25, 55], yaw_deg_range: [-45, 45], roll_deg_range: [-15, 15], target_z: 0.0044}
   lighting: {intensity_range: [0.25, 0.75]}
 tiles:
   count_range: [16, 30]
   allowed_classes: all
-  x_range: [-3.0, 3.0]
-  y_range: [-1.7, 1.7]
-  z_range: [0.0, 0.7]
+  x_range: [-0.25, 0.25]
+  y_range: [-0.20, 0.20]
+  z_range: [0.0, 0.008]
   scale_range: [0.65, 1.05]
   rotation_x_range: [-25, 25]
   rotation_y_range: [-25, 25]

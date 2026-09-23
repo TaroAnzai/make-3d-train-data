@@ -9,6 +9,7 @@ DEFAULTS: dict[str, Any] = {
     "general": {"seed": 12345},
     "output": {"root": "./output", "dataset_name": "dataset", "image_width": 1280, "image_height": 720, "count": 1, "formats": ["coco"]},
     "blender": {"binary": None, "samples": 32, "engine": "BLENDER_EEVEE"},
+    "assets": {"tile_blend": "./assets/blender/tiles_master.blend", "mat_blend": "./assets/masters/table_assets.blend"},
     "scene": {"mode": "random", "background": {"enabled": False, "path": "./assets/backgrounds"}, "camera": {"distance_range": [6, 10], "tilt_deg_range": [40, 80], "yaw_deg_range": [-25, 25], "roll_deg_range": [-5, 5]}, "lighting": {"intensity_range": [0.7, 1.5]}},
     "tiles": {"count_range": [8, 18], "allowed_classes": "all", "x_range": [-3.5, 3.5], "y_range": [-2, 2], "z_range": [0, 0.25], "scale_range": [0.8, 1.2], "rotation_x_range": [-8, 8], "rotation_y_range": [-8, 8], "rotation_z_range": [-30, 30], "overlap_ratio_range": [0, .25], "edge_crop_probability": .1, "small_tile_probability": .2, "small_scale_range": [.35, .65], "occlusion_enabled": True},
     "noise": {"blur_prob": .2, "blur_sigma_range": [.2, 1.2], "brightness_range": [.8, 1.2], "contrast_range": [.8, 1.2], "jpeg_quality_range": [70, 95]},
@@ -33,6 +34,9 @@ def validate_config(cfg: dict) -> dict:
     mode = cfg["scene"]["mode"]
     if mode not in ("fixed", "random"):
         raise ValueError("scene.mode must be fixed or random")
+    for name in ("tile_blend", "mat_blend"):
+        if not isinstance(cfg["assets"].get(name), str) or not cfg["assets"][name]:
+            raise ValueError(f"assets.{name} must be a file path")
     out = cfg["output"]
     for key in ("image_width", "image_height", "count"):
         if not isinstance(out[key], int) or out[key] <= 0:

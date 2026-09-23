@@ -7,7 +7,6 @@ from .class_defs import CLASSES
 from .coco_writer import CocoWriter
 from .manifest_writer import ManifestWriter
 from .scene_generator import generate_scenes
-from .texture_generator import generate_textures
 from .yolo_writer import write_yolo
 
 def _postprocess(path, noise, seed):
@@ -21,7 +20,6 @@ def build_dataset(config, blender_bin=None):
     root=Path(config["output"]["root"])/config["output"]["dataset_name"]
     images=root/"images"; labels=root/"labels"; meta=root/"meta"
     for p in (images,labels,meta): p.mkdir(parents=True,exist_ok=True)
-    generate_textures()
     coco=CocoWriter(); manifest=ManifestWriter(meta/"manifest.jsonl")
     (meta/"manifest.jsonl").write_text("",encoding="utf-8")
     with tempfile.TemporaryDirectory(prefix="mahjong_render_") as tmp:
@@ -37,4 +35,3 @@ def build_dataset(config, blender_bin=None):
     clean={k:v for k,v in config.items() if not k.startswith("_")}; (meta/"used_config.yaml").write_text(yaml.safe_dump(clean,sort_keys=False),encoding="utf-8")
     (meta/"generation_summary.json").write_text(json.dumps({"images":config["output"]["count"],"dataset":config["output"]["dataset_name"],"formats":config["output"]["formats"]},indent=2)+"\n",encoding="utf-8")
     return root
-

@@ -15,18 +15,18 @@ python -m pip install -e ".[dev]"
 
 `bpy` は pip 依存に含めません。推奨は Blender 5.2 LTS 以降の公式 Linux x64 バイナリです。公式tarballをユーザー領域（例: `~/software/blender-5.2.x/`）へ展開し、`~/.local/bin/blender` からリンクするとsudoなしで利用できます。OSパッケージやSnapも利用可能ですが、古い版ではEEVEE識別子が異なる場合があります。
 
-Blender がなくても、設定検証、シーン preview、37 テクスチャ生成、BBox/annotation ロジックの pytest を実行できます。導入後はコード変更なしで headless レンダリングを利用できます。
+Blender がなくても、設定検証、シーン preview、BBox/annotation ロジックの pytest を実行できます。画像生成には Blender と、リポジトリ内の `assets/blender/tiles_master.blend`・`assets/masters/table_assets.blend` が必要です。
 
 ## CLI
 
 ```bash
 python -m make_3d_train_data doctor
 python -m make_3d_train_data doctor --blender-bin /path/to/blender
-python -m make_3d_train_data textures generate
 python -m make_3d_train_data config validate configs/default.yaml
 python -m make_3d_train_data scene preview --config configs/default.yaml --count 3
 python -m make_3d_train_data generate --config configs/fixed_sample.yaml
 python -m make_3d_train_data generate --config configs/reference_table.yaml
+python -m make_3d_train_data generate --config configs/default_one.yaml
 python -m make_3d_train_data generate --config configs/default.yaml
 ```
 
@@ -42,19 +42,23 @@ python -m make_3d_train_data doctor
 
 Blender 5.2.2 LTSではEEVEEのengine IDは `BLENDER_EEVEE` です。レンダラは利用可能engineを実行時検証し、旧設定の `BLENDER_EEVEE_NEXT` も対応可能な場合は変換します。
 
+`generate` は YAML の `assets.tile_blend` と `assets.mat_blend` を読み込みます。`configs/` 内の YAML はすべて同じ master を参照します。パスはプロジェクトルートで実行したときの相対パスです。別の場所から実行する場合は絶対パスを指定してください。各画像のレンダリング時に master を読み込みます。
+
 ## 設定とシーン
 
-設定は YAML です。`general.seed + 画像 index` が各シーンの seed なので、同じ設定から同じ `SceneDescription` が得られます。
+設定は YAML です。`general.seed + 画像 index` が各シーンの seed なので、同じ設定から同じ `SceneDescription` が得られます。牌の座標、カメラ距離、マットの寸法はメートル単位です。マットは690 mm四方、牌の標準寸法は約20 × 28 × 16.5 mmです。`z: 0` はフェルト面に接地する高さで、回転させた牌も最も低い点をフェルト面に合わせます。
 
 - `fixed`: `tiles_fixed` の class、3D 位置、回転、scale をそのまま使用します。
-- `random`: 牌種/枚数/XYZ/回転/scale/密集/重なり/端切れ/小牌、カメラ距離・tilt/yaw/roll、照明、背景色を乱数化します。
+- `random`: 牌種/枚数/XYZ/回転/scale/密集/重なり/端切れ/小牌、カメラ距離・tilt/yaw/roll、照明を乱数化します。
 - `noise`: Blender 描画後に brightness、contrast、Gaussian blur、JPEG quality を乱数化します。
 - `configs/hard_cases.yaml`: 小牌、密集、重なり、斜め視点、端切れ、暗所、blur を強化しています。
-- `configs/reference_table.yaml`: 緑の麻雀卓、手前の立てた手牌、橙色の伏せ牌壁、中央と奥の捨て牌、被写界深度を持つ実卓写真風の1枚確認用シーンです。
+- `configs/fixed_sample.yaml`: 3枚の牌を固定配置する1枚確認用シーンです。
+- `configs/reference_table.yaml`: master マット上に、手前の立てた手牌、橙色の伏せ牌壁、中央と奥の捨て牌を固定配置する1枚確認用シーンです。
+- `configs/default_one.yaml`: `default.yaml` と同じ seed・ランダム配置・描画条件で最初の1枚だけ生成し、`output/sample_one_v001/` に保存します。
 
 `scene preview` は Blender を起動せず、通常 Python が作る JSON を表示します。実レンダリング時も一時 JSON を Blender に渡し、Blender が画像と投影結果 JSON を返します。通常コードは `bpy` を import しません。
 
-背景ディレクトリに JPG/PNG がある場合、選択したパスを manifest に記録します。v1 の Blender 床面はランダム色であり、背景画像の平面マッピングは未対応です。
+背景ディレクトリに JPG/PNG がある場合、選択したパスを manifest に記録できます。描画面は master のマットで、外側には暗い卓面を置きます。背景画像と `scene.background.color` の描画には未対応です。
 
 ## 牌と canonical 37
 
@@ -62,7 +66,7 @@ ID は固定です: `1..9 = 1m..9m`、`10..18 = 1p..9p`、`19..27 = 1s..9s`、`2
 
 定義元は `class_defs.py` の一か所です。COCO category ID は canonical ID をそのまま使います。YOLO は 0-based のため `YOLO ID = canonical ID - 1`（canonical 1 → YOLO 0、canonical 37 → YOLO 36）です。`classes.json` に対応も保存します。
 
-牌面は外部の市販デザインに依存せず自動生成します。萬子は数と萬、筒子は円、索子は竹、字牌は漢字風の図案、赤5は赤い図案です。Blender 側は厚みのある面取り済み直方体を作成し、素材とテクスチャを適用します。事前作成 `.blend` は不要です。
+牌は `assets/blender/tiles_master.blend` の `master_tile` を複製し、共有メッシュとパック済みの37種の牌面画像を使います。字牌の英語名と master のコード（例: `east` → `ton`、`red5p` → `5pr`）はレンダラが変換します。マットは `assets/masters/table_assets.blend` の `mat_table` を使います。牌面の元絵は `external/riichi-mahjong-tiles` サブモジュールにあり、ライセンスは同ディレクトリの `LICENSE.md` を参照してください。既存の `textures generate` コマンドは元絵のコピーを作りますが、`generate` では使用しません。
 
 ## 出力
 
@@ -85,7 +89,7 @@ COCO は全 37 categories と、画像ごとの pixel `xywh`、area を保存し
 
 v1 は各 3D 牌の 8 bounding-box corner をカメラへ投影し、最終画像境界に clip します。完全画面外または幅/高さ 0 以下は除外します。pixel-level 可視領域ではないため、重なった牌の BBox は遮蔽部分を含み、`occluded` は現状 `false` です。object-index pass / segmentation mask を追加し、visible-pixel BBox、遮蔽率、instance mask を算出するのが次の改善点です。
 
-ほかの制約として、背景画像そのものの Blender 合成、物理衝突による自然な積み重なり、motion/depth-of-field blur、複数の牌モデル・材質、完全なフォトリアル性は未対応です。現状の overlap は位置クラスタリングと Z 乱数による近似です。
+ほかの制約として、背景画像そのものの Blender 合成、物理衝突による自然な積み重なり、motion blur、複数の牌モデル、完全なフォトリアル性は未対応です。被写界深度は YAML で設定できます。現状の overlap は位置クラスタリングと Z 乱数による近似です。
 
 ## テスト
 

@@ -1,4 +1,4 @@
-import json,sys
+import json,os,sys
 from pathlib import Path
 
 # Blender sanitizes or ignores an external PYTHONPATH in some distributions.
@@ -14,7 +14,7 @@ from make_3d_train_data.blender.bbox_projection import project_bbox
 
 def main():
     path=Path(sys.argv[sys.argv.index("--")+1]); payload=json.loads(path.read_text()); data,render=payload["scene"],payload["render"]
-    objects,cam=build_scene(data,render["texture_dir"]); scene=bpy.context.scene
+    objects,cam=build_scene(data,render["assets"]); scene=bpy.context.scene
     available={item.identifier for item in bpy.types.RenderSettings.bl_rna.properties["engine"].enum_items}
     requested=render["engine"]
     if requested not in available and requested=="BLENDER_EEVEE_NEXT" and "BLENDER_EEVEE" in available:
@@ -34,4 +34,10 @@ def main():
         if box:
             x1,y1,x2,y2=box; annotations.append({"canonical_id":tile["class_id"],"class":tile["class_name"],"bbox_xyxy":box,"bbox_xywh":[x1,y1,x2-x1,y2-y1],"position_3d":[tile["x"],tile["y"],tile["z"]],"rotation_deg":[tile["rotation_x"],tile["rotation_y"],tile["rotation_z"]],"scale":tile["scale"],"face_down":tile.get("face_down",False),"occluded":False})
     Path(render["result_path"]).write_text(json.dumps({"annotations":annotations}))
-if __name__=="__main__": main()
+if __name__=="__main__":
+    main()
+    # Some headless Blender builds hang during shutdown after a successful render.
+    # All outputs are written by this point; exit the one-scene worker directly.
+    sys.stdout.flush()
+    sys.stderr.flush()
+    os._exit(0)

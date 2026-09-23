@@ -11,22 +11,26 @@ blender:
   binary: null
   samples: 32
   engine: BLENDER_EEVEE
+assets:
+  tile_blend: ./assets/blender/tiles_master.blend
+  mat_blend: ./assets/masters/table_assets.blend
 scene:
   mode: random
-  background: {path: ./assets/backgrounds, enabled: true}
+  background: {path: ./assets/backgrounds, enabled: false}
   camera:
-    distance_range: [6.0, 10.0]
-    tilt_deg_range: [40, 80]
+    distance_range: [0.42, 0.65]
+    tilt_deg_range: [35, 65]
     yaw_deg_range: [-25, 25]
     roll_deg_range: [-5, 5]
+    target_z: 0.0044
   lighting:
     intensity_range: [0.7, 1.5]
 tiles:
   count_range: [8, 18]
   allowed_classes: all
-  x_range: [-3.5, 3.5]
-  y_range: [-2.0, 2.0]
-  z_range: [0.0, 0.25]
+  x_range: [-0.24, 0.24]
+  y_range: [-0.20, 0.20]
+  z_range: [0.0, 0.003]
   scale_range: [0.8, 1.2]
   rotation_x_range: [-8, 8]
   rotation_y_range: [-8, 8]

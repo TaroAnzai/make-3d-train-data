@@ -55,7 +55,7 @@ def _random_tiles(rng, cfg):
         # Cluster selected tiles around an earlier tile. The configured upper overlap ratio controls frequency.
         overlap = _uniform(rng, cfg["overlap_ratio_range"])
         if result and rng.random() < overlap:
-            anchor = rng.choice(result); x = anchor.x + rng.uniform(-.45, .45); y = anchor.y + rng.uniform(-.6, .6)
+            anchor = rng.choice(result); x = anchor.x + rng.uniform(-.018, .018); y = anchor.y + rng.uniform(-.025, .025)
         if rng.random() < cfg["edge_crop_probability"]:
             x = rng.choice((-1, 1)) * rng.uniform(max(abs(cfg["x_range"][0]), abs(cfg["x_range"][1])) * .9, max(abs(cfg["x_range"][0]), abs(cfg["x_range"][1])) * 1.25)
         result.append(TileInstance(cls.canonical_id, cls.name, x, y, _uniform(rng, cfg["z_range"]), _uniform(rng, cfg["rotation_x_range"]), _uniform(rng, cfg["rotation_y_range"]), _uniform(rng, cfg["rotation_z_range"]), scale))
