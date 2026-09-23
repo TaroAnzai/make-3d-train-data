@@ -57,6 +57,42 @@ def validate_config(cfg: dict) -> dict:
         if not cfg.get("tiles_fixed"):
             raise ValueError("fixed mode requires tiles_fixed")
         for item in cfg["tiles_fixed"]: resolve_class(item.get("class"))
+    variations = cfg.get("variations", {})
+    if variations.get("enabled"):
+        if mode != "fixed":
+            raise ValueError("variations requires scene.mode: fixed")
+        for key in ("star3_probability", "star2_probability"):
+            if not 0 <= variations[key] <= 1:
+                raise ValueError(f"variations.{key} must be between 0 and 1")
+        for path in (
+            "variations.hand.x_offset_mm_range", "variations.hand.y_offset_mm_range",
+            "variations.hand.rotation_z_deg_range", "variations.hand.spacing_mm_range",
+            "variations.camera.distance_range", "variations.camera.tilt_deg_range",
+            "variations.camera.yaw_deg_range", "variations.camera.roll_deg_range",
+            "variations.camera.target_x_range", "variations.camera.target_y_range",
+            "variations.lighting.intensity_range", "variations.noise.brightness_range",
+            "variations.noise.contrast_range", "variations.noise.jpeg_quality_range",
+            "variations.noise.blur_sigma_range", "variations.wall_shift_mm_range",
+        ):
+            _range(cfg, path)
+        counts = variations["hand"]["count_options"]
+        if counts != [13, 14]:
+            raise ValueError("variations.hand.count_options must be [13, 14]")
+        if not 0 <= variations["hand"]["face_up_probability"] <= 1:
+            raise ValueError("variations.hand.face_up_probability must be between 0 and 1")
+        if not isinstance(variations["camera"]["lens_mm"], (int, float)) or variations["camera"]["lens_mm"] <= 0:
+            raise ValueError("variations.camera.lens_mm must be positive")
+        groups = [item.get("group") for item in cfg["tiles_fixed"]]
+        if groups.count("hand") != 13 or "discard" not in groups or "wall_back" not in groups:
+            raise ValueError("variations requires 13 hand tiles and tagged discard/wall tiles")
+        annotation_groups = variations["annotation_groups"]
+        if not isinstance(annotation_groups, list) or not annotation_groups or not set(annotation_groups).issubset(set(groups)):
+            raise ValueError("variations.annotation_groups must name tagged tile groups")
+        for key in ("discard_max_removed", "wall_max_removed"):
+            if not isinstance(variations[key], int) or variations[key] < 1:
+                raise ValueError(f"variations.{key} must be a positive integer")
+        if not 0 <= variations["noise"]["blur_conditional_probability"] <= 1:
+            raise ValueError("variations.noise.blur_conditional_probability must be between 0 and 1")
     return cfg
 
 def load_config(path: str | Path) -> dict:

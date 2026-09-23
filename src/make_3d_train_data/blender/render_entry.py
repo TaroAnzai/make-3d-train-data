@@ -30,6 +30,8 @@ def main():
     bpy.ops.render.render(write_still=True)
     annotations=[]
     for obj,tile in objects:
+        if not tile.get("annotate",True):
+            continue
         box=project_bbox(scene,cam,obj,render["width"],render["height"])
         if box:
             x1,y1,x2,y2=box; annotations.append({"canonical_id":tile["class_id"],"class":tile["class_name"],"bbox_xyxy":box,"bbox_xywh":[x1,y1,x2-x1,y2-y1],"position_3d":[tile["x"],tile["y"],tile["z"]],"rotation_deg":[tile["rotation_x"],tile["rotation_y"],tile["rotation_z"]],"scale":tile["scale"],"face_down":tile.get("face_down",False),"occluded":False})

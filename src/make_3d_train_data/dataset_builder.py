@@ -25,7 +25,7 @@ def build_dataset(config, blender_bin=None):
     with tempfile.TemporaryDirectory(prefix="mahjong_render_") as tmp:
         for i,scene in enumerate(generate_scenes(config),1):
             name=f"{i:06d}.jpg"; result=render_scene(scene,config,Path(tmp)/f"scene_{i}.json",Path(tmp)/f"result_{i}.json",images/name,blender_bin)
-            _postprocess(images/name,config["noise"],scene.seed)
+            _postprocess(images/name,scene.noise,scene.seed)
             anns=result["annotations"]
             if "coco" in config["output"]["formats"]: coco.add_image(i,name,config["output"]["image_width"],config["output"]["image_height"],anns)
             if "yolo" in config["output"]["formats"]: write_yolo(labels/"yolo"/f"{i:06d}.txt",anns,config["output"]["image_width"],config["output"]["image_height"])

@@ -1,6 +1,7 @@
 import random
 from pathlib import Path
 from .class_defs import CLASSES, resolve_class
+from .fixed_variations import vary_fixed_scene
 from .models import CameraDescription, LightingDescription, SceneDescription, TileInstance
 
 def _uniform(rng: random.Random, values): return rng.uniform(float(values[0]), float(values[1]))
@@ -9,7 +10,10 @@ def generate_scene(config: dict, index: int = 0) -> SceneDescription:
     seed = int(config["general"]["seed"]) + index
     rng = random.Random(seed)
     scene_cfg, tiles_cfg = config["scene"], config["tiles"]
-    camera_cfg = scene_cfg["camera"]
+    fixed_tiles = config.get("tiles_fixed", [])
+    camera_cfg, lighting_cfg, noise_cfg = scene_cfg["camera"], scene_cfg["lighting"], config["noise"]
+    if scene_cfg["mode"] == "fixed" and config.get("variations", {}).get("enabled"):
+        fixed_tiles, camera_cfg, lighting_cfg, noise_cfg = vary_fixed_scene(config, index, rng)
     camera = CameraDescription(
         distance=_uniform(rng, camera_cfg["distance_range"]),
         tilt_deg=_uniform(rng, camera_cfg["tilt_deg_range"]),
@@ -23,23 +27,27 @@ def generate_scene(config: dict, index: int = 0) -> SceneDescription:
         focus_distance=float(camera_cfg.get("focus_distance", 10.0)),
         aperture_fstop=float(camera_cfg.get("aperture_fstop", 5.6)),
     )
-    lighting = LightingDescription(_uniform(rng, scene_cfg["lighting"]["intensity_range"]))
-    tiles = _fixed_tiles(config) if scene_cfg["mode"] == "fixed" else _random_tiles(rng, tiles_cfg)
+    lighting = LightingDescription(_uniform(rng, lighting_cfg["intensity_range"]))
+    annotation_groups = config["variations"]["annotation_groups"] if config.get("variations", {}).get("enabled") else None
+    tiles = _fixed_tiles(fixed_tiles, annotation_groups) if scene_cfg["mode"] == "fixed" else _random_tiles(rng, tiles_cfg)
     background = dict(scene_cfg.get("background", {}))
     background.setdefault("color", [round(rng.uniform(.025, .22), 4) for _ in range(3)])
     if background.get("enabled"):
         candidates = sorted(p for p in Path(background.get("path", "")).glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png"})
         background["selected"] = str(rng.choice(candidates).resolve()) if candidates else None
-    return SceneDescription(seed, scene_cfg["mode"], tiles, camera, lighting, background, dict(config.get("noise", {})))
+    return SceneDescription(seed, scene_cfg["mode"], tiles, camera, lighting, background, dict(noise_cfg))
 
 def generate_scenes(config: dict, count: int | None = None):
     return [generate_scene(config, i) for i in range(count if count is not None else config["output"]["count"])]
 
-def _fixed_tiles(config):
+def _fixed_tiles(tiles_fixed, annotation_groups=None):
     result = []
-    for data in config["tiles_fixed"]:
+    for data in tiles_fixed:
         cls = resolve_class(data["class"])
-        result.append(TileInstance(cls.canonical_id, cls.name, **{k: data[k] for k in ("x", "y", "z", "rotation_x", "rotation_y", "rotation_z", "scale", "face_down") if k in data}))
+        kwargs = {k: data[k] for k in ("x", "y", "z", "rotation_x", "rotation_y", "rotation_z", "scale", "face_down") if k in data}
+        if annotation_groups is not None:
+            kwargs["annotate"] = data.get("group") in annotation_groups
+        result.append(TileInstance(cls.canonical_id, cls.name, **kwargs))
     return result
 
 def _random_tiles(rng, cfg):

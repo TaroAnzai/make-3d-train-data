@@ -1,0 +1,162 @@
+# Inspired by external/photo_sample/34344494_s.jpg (640 x 480).
+# Coordinates are metres on the 690 mm square mahjong mat.
+general: {seed: 34344494}
+output:
+  root: ./output
+  dataset_name: photo_34344494
+  image_width: 640
+  image_height: 480
+  count: 100
+  formats: [coco, yolo]
+blender: {binary: null, samples: 32, engine: BLENDER_EEVEE}
+assets:
+  tile_blend: ./assets/blender/tiles_master.blend
+  mat_blend: ./assets/masters/table_assets.blend
+scene:
+  mode: fixed
+  background: {enabled: false, path: ./assets/backgrounds}
+  camera:
+    distance_range: [0.503, 0.503]
+    tilt_deg_range: [55.5, 55.5]
+    yaw_deg_range: [0, 0]
+    roll_deg_range: [0, 0]
+    target_x: 0
+    target_y: -0.185
+    target_z: 0.005
+    lens_mm: 50
+    dof_enabled: false
+    focus_distance: 0.48
+    aperture_fstop: 5.6
+  lighting: {intensity_range: [1.3, 1.3]}
+noise:
+  blur_prob: 0
+  brightness_range: [1.12, 1.12]
+  contrast_range: [1.0, 1.0]
+  jpeg_quality_range: [95, 95]
+variations:
+  enabled: true
+  annotation_groups: [hand]  # Background tiles are visible but excluded from class labels.
+  # 5/4 stars change every image. 3 stars change on about 80%, 2 stars on about 50%.
+  star3_probability: 0.8
+  star2_probability: 0.5
+  hand:
+    count_options: [13, 14]
+    face_up_probability: 0.5  # One posture for the whole hand: flat or upright.
+    x_offset_mm_range: [2, 5]
+    y_offset_mm_range: [2, 5]
+    rotation_z_deg_range: [2, 5]
+    spacing_mm_range: [20, 23]  # 14 tiles are capped at 21 mm to remain in frame.
+  camera:
+    distance_range: [0.48, 0.54]
+    tilt_deg_range: [50, 62]
+    lens_mm: 40  # Keeps 13/14 tiles inside the 640 px frame across these camera ranges.
+    yaw_deg_range: [-4, 4]
+    roll_deg_range: [-2, 2]
+    target_x_range: [-0.02, 0.02]
+    target_y_range: [-0.20, -0.17]
+  lighting:
+    intensity_range: [0.9, 1.6]
+  noise:
+    brightness_range: [0.85, 1.20]
+    contrast_range: [0.9, 1.1]
+    jpeg_quality_range: [75, 100]
+    # 50% eligible x 27% conditional = approximately 14% blurred images.
+    blur_conditional_probability: 0.27
+    blur_sigma_range: [0.2, 1.0]
+  discard_max_removed: 4
+  wall_shift_mm_range: [2, 5]
+  wall_max_removed: 2
+tiles_fixed:
+  # The player's upright hand, midway between the near wall and mat edge.
+  - {class: 2s, x: -0.132, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 3s, x: -0.110, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 4s, x: -0.088, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: red5s, x: -0.066, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 6s, x: -0.044, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 7s, x: -0.022, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 8s, x: 0.000, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 7p, x: 0.022, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: red5p, x: 0.044, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 6p, x: 0.066, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: 8p, x: 0.088, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: green, x: 0.110, y: -0.273, z: 0, rotation_x: 90, group: hand}
+  - {class: green, x: 0.132, y: -0.273, z: 0, rotation_x: 90, group: hand}
+
+  # Two-layer orange-backed wall just behind the hand.
+  - {class: white, x: -0.080, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: -0.060, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: -0.040, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: -0.020, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.000, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.020, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.040, y: -0.200, z: 0, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: -0.080, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: -0.060, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: 1s, x: -0.040, y: -0.198, z: 0.0165, rotation_z: 0, group: wall_front}
+  - {class: white, x: -0.020, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.000, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.020, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+  - {class: white, x: 0.040, y: -0.198, z: 0.0165, rotation_x: 180, face_down: true, group: wall_front}
+
+  # Loose face-up groups around the central part of the table.
+  - {class: 7m, x: -0.068, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: 9m, x: -0.048, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: west, x: -0.028, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: red, x: -0.008, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: red, x: 0.012, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: 1p, x: 0.032, y: -0.108, z: 0, rotation_z: 180, group: discard}
+  - {class: north, x: -0.068, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: 6m, x: -0.048, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: green, x: -0.028, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: 2m, x: -0.008, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: 2m, x: 0.012, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: north, x: 0.032, y: -0.080, z: 0, rotation_z: 180, group: discard}
+  - {class: 1p, x: -0.068, y: -0.052, z: 0, rotation_z: 180, group: discard}
+  - {class: 7m, x: -0.048, y: -0.052, z: 0, rotation_z: 180, group: discard}
+  - {class: green, x: -0.028, y: -0.052, z: 0, rotation_z: 180, group: discard}
+  - {class: 3p, x: -0.008, y: -0.052, z: 0, rotation_z: 180, group: discard}
+
+  # Smaller discarded group to the right of the central area.
+  - {class: 3s, x: 0.070, y: -0.045, z: 0, rotation_z: 90, group: discard}
+  - {class: 5m, x: 0.098, y: -0.045, z: 0, rotation_z: 90, group: discard}
+  - {class: 4p, x: 0.126, y: -0.045, z: 0, rotation_z: 90, group: discard}
+  - {class: 6s, x: 0.070, y: -0.025, z: 0, rotation_z: 90, group: discard}
+  - {class: 7m, x: 0.098, y: -0.025, z: 0, rotation_z: 90, group: discard}
+  - {class: 2p, x: 0.126, y: -0.025, z: 0, rotation_z: 90, group: discard}
+  - {class: 8s, x: 0.070, y: -0.005, z: 0, rotation_z: 90, group: discard}
+  - {class: 1m, x: 0.098, y: -0.005, z: 0, rotation_z: 90, group: discard}
+  - {class: 9p, x: 0.126, y: -0.005, z: 0, rotation_z: 90, group: discard}
+  - {class: green, x: 0.070, y: 0.015, z: 0, rotation_z: 90, group: discard}
+  - {class: 3m, x: 0.098, y: 0.015, z: 0, rotation_z: 90, group: discard}
+  - {class: 8p, x: 0.126, y: 0.015, z: 0, rotation_z: 90, group: discard}
+
+  # Far wall along the top edge of the photograph.
+  - {class: white, x: -0.100, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.080, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.060, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.040, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.020, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.000, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.020, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.040, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.060, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.080, y: 0.090, z: 0, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.100, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.080, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.060, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.040, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: -0.020, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.000, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.020, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.040, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.060, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+  - {class: white, x: 0.080, y: 0.090, z: 0.0165, rotation_x: 180, face_down: true, group: wall_back}
+
+  # Short far-right wall, barely visible in the source frame.
+  - {class: white, x: 0.290, y: 0.120, z: 0, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.290, y: 0.100, z: 0, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.290, y: 0.080, z: 0, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.290, y: 0.120, z: 0.0165, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.290, y: 0.100, z: 0.0165, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.290, y: 0.080, z: 0.0165, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}
+  - {class: white, x: 0.295, y: -0.045, z: 0, rotation_x: 180, rotation_z: 90, face_down: true, group: wall_right}

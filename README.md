@@ -26,6 +26,7 @@ python -m make_3d_train_data config validate configs/default.yaml
 python -m make_3d_train_data scene preview --config configs/default.yaml --count 3
 python -m make_3d_train_data generate --config configs/fixed_sample.yaml
 python -m make_3d_train_data generate --config configs/reference_table.yaml
+python -m make_3d_train_data generate --config configs/photo_34344494.yaml
 python -m make_3d_train_data generate --config configs/default_one.yaml
 python -m make_3d_train_data generate --config configs/default.yaml
 ```
@@ -54,6 +55,7 @@ Blender 5.2.2 LTSではEEVEEのengine IDは `BLENDER_EEVEE` です。レンダ�
 - `configs/hard_cases.yaml`: 小牌、密集、重なり、斜め視点、端切れ、暗所、blur を強化しています。
 - `configs/fixed_sample.yaml`: 3枚の牌を固定配置する1枚確認用シーンです。
 - `configs/reference_table.yaml`: master マット上に、手前の立てた手牌、橙色の伏せ牌壁、中央と奥の捨て牌を固定配置する1枚確認用シーンです。
+- `configs/photo_34344494.yaml`: 写真を基準にした100枚の変化付きシーンです。手牌は13/14枚を交互に生成し、画像ごとに立てた手牌と表向きに寝かせた手牌を選びます。37牌種の出現回数を全画像でほぼ均等にします。撮影条件と背景は `variations` の確率・範囲で変化します。背景の牌は描画されますが、COCO/YOLO のラベルには手牌だけを含めます。
 - `configs/default_one.yaml`: `default.yaml` と同じ seed・ランダム配置・描画条件で最初の1枚だけ生成し、`output/sample_one_v001/` に保存します。
 
 `scene preview` は Blender を起動せず、通常 Python が作る JSON を表示します。実レンダリング時も一時 JSON を Blender に渡し、Blender が画像と投影結果 JSON を返します。通常コードは `bpy` を import しません。

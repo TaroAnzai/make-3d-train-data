@@ -13,6 +13,7 @@ class TileInstance:
     rotation_z: float = 0.0
     scale: float = 1.0
     face_down: bool = False
+    annotate: bool = True
 
 @dataclass
 class CameraDescription:
