@@ -1,0 +1,35 @@
+general: {seed: 98765}
+output:
+  root: ./output
+  dataset_name: hard_cases_v001
+  image_width: 1280
+  image_height: 720
+  count: 200
+  formats: [coco, yolo]
+blender: {binary: null, samples: 24, engine: BLENDER_EEVEE}
+scene:
+  mode: random
+  background: {enabled: true, path: ./assets/backgrounds}
+  camera: {distance_range: [8.0, 13.0], tilt_deg_range: [25, 55], yaw_deg_range: [-45, 45], roll_deg_range: [-15, 15]}
+  lighting: {intensity_range: [0.25, 0.75]}
+tiles:
+  count_range: [16, 30]
+  allowed_classes: all
+  x_range: [-3.0, 3.0]
+  y_range: [-1.7, 1.7]
+  z_range: [0.0, 0.7]
+  scale_range: [0.65, 1.05]
+  rotation_x_range: [-25, 25]
+  rotation_y_range: [-25, 25]
+  rotation_z_range: [-70, 70]
+  overlap_ratio_range: [0.35, 0.70]
+  edge_crop_probability: 0.35
+  small_tile_probability: 0.55
+  small_scale_range: [0.25, 0.55]
+  occlusion_enabled: true
+noise:
+  blur_prob: 0.55
+  blur_sigma_range: [0.7, 2.2]
+  brightness_range: [0.35, 0.85]
+  contrast_range: [0.65, 1.15]
+  jpeg_quality_range: [50, 82]

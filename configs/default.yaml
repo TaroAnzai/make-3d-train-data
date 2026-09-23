@@ -1,0 +1,44 @@
+general:
+  seed: 12345
+output:
+  root: ./output
+  dataset_name: sample_v001
+  image_width: 1280
+  image_height: 720
+  count: 100
+  formats: [coco, yolo]
+blender:
+  binary: null
+  samples: 32
+  engine: BLENDER_EEVEE
+scene:
+  mode: random
+  background: {path: ./assets/backgrounds, enabled: true}
+  camera:
+    distance_range: [6.0, 10.0]
+    tilt_deg_range: [40, 80]
+    yaw_deg_range: [-25, 25]
+    roll_deg_range: [-5, 5]
+  lighting:
+    intensity_range: [0.7, 1.5]
+tiles:
+  count_range: [8, 18]
+  allowed_classes: all
+  x_range: [-3.5, 3.5]
+  y_range: [-2.0, 2.0]
+  z_range: [0.0, 0.25]
+  scale_range: [0.8, 1.2]
+  rotation_x_range: [-8, 8]
+  rotation_y_range: [-8, 8]
+  rotation_z_range: [-30, 30]
+  overlap_ratio_range: [0.0, 0.25]
+  edge_crop_probability: 0.10
+  small_tile_probability: 0.20
+  small_scale_range: [0.35, 0.65]
+  occlusion_enabled: true
+noise:
+  blur_prob: 0.20
+  blur_sigma_range: [0.2, 1.2]
+  brightness_range: [0.8, 1.2]
+  contrast_range: [0.8, 1.2]
+  jpeg_quality_range: [70, 95]

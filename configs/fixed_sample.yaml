@@ -1,0 +1,18 @@
+general: {seed: 20240901}
+output:
+  root: ./output
+  dataset_name: fixed_sample
+  image_width: 1280
+  image_height: 720
+  count: 1
+  formats: [coco, yolo]
+blender: {binary: null, samples: 32, engine: BLENDER_EEVEE}
+scene:
+  mode: fixed
+  background: {enabled: false, path: ./assets/backgrounds}
+  camera: {distance_range: [7.5, 7.5], tilt_deg_range: [55, 55], yaw_deg_range: [0, 0], roll_deg_range: [0, 0]}
+  lighting: {intensity_range: [1.0, 1.0]}
+tiles_fixed:
+  - {class: 1m, x: -1.5, y: 0, z: 0, rotation_z: 0}
+  - {class: east, x: 0, y: 0, z: 0, rotation_z: -10}
+  - {class: red5p, x: 1.5, y: 0, z: 0, rotation_z: 15}
