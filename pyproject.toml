@@ -7,7 +7,7 @@ name = "make-3d-train-data"
 version = "0.1.0"
 description = "Headless Blender synthetic dataset generator for 37 mahjong tile classes"
 requires-python = ">=3.10"
-dependencies = ["PyYAML>=6.0", "Pillow>=10.0"]
+dependencies = ["PyYAML>=6.0", "Pillow>=10.0", "tqdm>=4.66"]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0"]

@@ -33,6 +33,7 @@ python -m make_3d_train_data generate --config configs/default_random.yaml
 
 Blender の探索順は `--blender-bin`、`BLENDER_BIN`、YAML の `blender.binary`、`PATH` 上の `blender` です。未検出時の `generate` は traceback ではなく対処方法を含むエラーを返します。
 `generate --count` で生成枚数を指定すると、YAML の `output.count` より優先されます。省略時は YAML の値を使用します。
+`generate` の実行中は、画像の処理が完了するたびに進むプログレスバーを表示します。
 
 ```bash
 command -v blender

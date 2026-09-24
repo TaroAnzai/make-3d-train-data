@@ -3,7 +3,7 @@
 general: {seed: 34344494}
 output:
   root: ./output
-  dataset_name: photo_34344494
+  dataset_name: sample_v001
   image_width: 640
   image_height: 480
   count: 3000
