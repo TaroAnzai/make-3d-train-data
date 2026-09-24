@@ -6,7 +6,7 @@ from make_3d_train_data.scene_generator import generate_scene, generate_scenes
 
 def test_photo_variations_balance_hand_across_100_images():
     cfg = load_config("configs/photo_34344494.yaml")
-    scenes = generate_scenes(cfg)
+    scenes = generate_scenes(cfg, 100)
     hands = [[tile for tile in scene.tiles if tile.annotate] for scene in scenes]
     assert [len(hand) for hand in hands] == [13, 14] * 50
     frequencies = Counter(tile.class_name for hand in hands for tile in hand)
@@ -20,6 +20,13 @@ def test_photo_variations_balance_hand_across_100_images():
     assert {hand[0].rotation_x for hand in hands} == {0, 90}
     assert all({tile.rotation_x for tile in hand} == {hand[0].rotation_x} for hand in hands)
     assert all(not tile.face_down for hand in hands for tile in hand)
+    assert len({scene.lighting.key_position for scene in scenes}) == 100
+    assert len({scene.lighting.fill_position for scene in scenes}) == 100
+    assert len({scene.lighting.color_temperature for scene in scenes}) == 100
+    assert len({scene.appearance["tile_roughness"] for scene in scenes}) == 100
+    assert len({scene.appearance["felt_tint"][1] for scene in scenes}) == 100
+    assert all(.34 <= scene.appearance["tile_roughness"] <= .48 for scene in scenes)
+    assert all(.30 <= scene.appearance["tile_specular"] <= .42 for scene in scenes)
 
 
 def test_photo_variations_reproducible_and_preserve_indicator():
@@ -29,3 +36,12 @@ def test_photo_variations_reproducible_and_preserve_indicator():
     assert any(tile.class_name == "1s" and tile.z == 0.0165
                and tile.rotation_x == 0 for tile in first.tiles)
     assert 13 <= sum(tile.annotate for tile in first.tiles) <= 14
+
+
+def test_photo_occlusion_can_be_enabled_without_changing_labels():
+    cfg = load_config("configs/photo_34344494.yaml")
+    cfg["variations"]["hand_occlusion_probability"] = 1
+    scene = generate_scene(cfg, 0)
+    assert scene.occlusion["kind"] == "fingertip"
+    assert any(tile.annotate and tile.x == scene.occlusion["x"] for tile in scene.tiles)
+    assert scene.to_dict() == generate_scene(cfg, 0).to_dict()

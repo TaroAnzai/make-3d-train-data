@@ -32,6 +32,9 @@ class CameraDescription:
 @dataclass
 class LightingDescription:
     intensity: float = 1.0
+    key_position: tuple[float, float, float] = (-.35, -.25, .8)
+    fill_position: tuple[float, float, float] = (.35, .2, .55)
+    color_temperature: float = 5000.0
 
 @dataclass
 class SceneDescription:
@@ -42,6 +45,8 @@ class SceneDescription:
     lighting: LightingDescription = field(default_factory=LightingDescription)
     background: dict[str, Any] = field(default_factory=dict)
     noise: dict[str, Any] = field(default_factory=dict)
+    appearance: dict[str, Any] = field(default_factory=dict)
+    occlusion: dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)

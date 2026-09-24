@@ -97,9 +97,7 @@ def vary_fixed_scene(config: dict, index: int, rng: random.Random) -> tuple[list
             camera[key] = spec["camera"][key]
     for key in ("target_x", "target_y"):
         camera[key] = _maybe_range(rng, spec["camera"][key + "_range"], camera[key], p3)
-    lighting["intensity_range"] = (
-        spec["lighting"]["intensity_range"] if rng.random() < p3 else lighting["intensity_range"]
-    )
+    lighting.update(spec["lighting"])
     for key in ("brightness_range", "contrast_range"):
         if rng.random() < p3:
             noise[key] = spec["noise"][key]

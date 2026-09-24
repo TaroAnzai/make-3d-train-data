@@ -29,7 +29,7 @@ def build_dataset(config, blender_bin=None):
             anns=result["annotations"]
             if "coco" in config["output"]["formats"]: coco.add_image(i,name,config["output"]["image_width"],config["output"]["image_height"],anns)
             if "yolo" in config["output"]["formats"]: write_yolo(labels/"yolo"/f"{i:06d}.txt",anns,config["output"]["image_width"],config["output"]["image_height"])
-            manifest.append({"image":name,"seed":scene.seed,"width":config["output"]["image_width"],"height":config["output"]["image_height"],"mode":scene.mode,"tiles":anns,"camera":scene.to_dict()["camera"],"lighting":scene.to_dict()["lighting"],"background":scene.background})
+            manifest.append({"image":name,"seed":scene.seed,"width":config["output"]["image_width"],"height":config["output"]["image_height"],"mode":scene.mode,"tiles":anns,"camera":scene.to_dict()["camera"],"lighting":scene.to_dict()["lighting"],"background":scene.background,"appearance":scene.appearance,"occlusion":scene.occlusion})
     if "coco" in config["output"]["formats"]: coco.write(labels/"instances.json")
     (meta/"classes.json").write_text(json.dumps([{"canonical_id":c.canonical_id,"name":c.name,"yolo_id":c.canonical_id-1} for c in CLASSES],indent=2)+"\n",encoding="utf-8")
     clean={k:v for k,v in config.items() if not k.startswith("_")}; (meta/"used_config.yaml").write_text(yaml.safe_dump(clean,sort_keys=False),encoding="utf-8")

@@ -55,7 +55,18 @@ variations:
     target_x_range: [-0.02, 0.02]
     target_y_range: [-0.20, -0.17]
   lighting:
-    intensity_range: [0.9, 1.6]
+    intensity_range: [1.0, 1.55]
+    key_position_ranges: [[-0.48, -0.22], [-0.38, -0.12], [0.68, 0.95]]
+    fill_position_ranges: [[0.22, 0.46], [0.08, 0.32], [0.48, 0.72]]
+    color_temperature_range: [4000, 6200]
+  materials:
+    tile_roughness_range: [0.34, 0.48]
+    tile_specular_range: [0.30, 0.42]
+    felt_tint_ranges: [[0.78, 1.0], [0.92, 1.08], [0.50, 0.80]]
+    felt_brightness_range: [0.90, 1.10]
+    felt_roughness_range: [0.88, 0.98]
+    felt_texture_strength_range: [0.015, 0.045]
+  hand_occlusion_probability: 0.01
   noise:
     brightness_range: [0.85, 1.20]
     contrast_range: [0.9, 1.1]

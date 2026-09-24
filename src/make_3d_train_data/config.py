@@ -75,6 +75,32 @@ def validate_config(cfg: dict) -> dict:
             "variations.noise.blur_sigma_range", "variations.wall_shift_mm_range",
         ):
             _range(cfg, path)
+        lighting = variations["lighting"]
+        for name, bounds in (("key_position_ranges", ((-.6, -.1), (-.5, 0), (.5, 1.1))),
+                             ("fill_position_ranges", ((.1, .6), (0, .5), (.35, .85)))):
+            if name in lighting:
+                axes = lighting[name]
+                if not isinstance(axes, list) or len(axes) != 3:
+                    raise ValueError(f"variations.lighting.{name} must contain X/Y/Z ranges")
+                for axis, (minimum, maximum) in zip(axes, bounds):
+                    _range({"axis": axis}, "axis", minimum=minimum, maximum=maximum)
+        if "color_temperature_range" in lighting:
+            _range(cfg, "variations.lighting.color_temperature_range", minimum=3500, maximum=7000)
+        materials = variations.get("materials", {})
+        if materials:
+            for name, bounds in (("tile_roughness_range", (.25, .65)),
+                                 ("tile_specular_range", (.2, .5)),
+                                 ("felt_brightness_range", (.8, 1.2)),
+                                 ("felt_roughness_range", (.75, 1)),
+                                 ("felt_texture_strength_range", (0, .06))):
+                _range(cfg, f"variations.materials.{name}", minimum=bounds[0], maximum=bounds[1])
+            tint = materials.get("felt_tint_ranges")
+            if not isinstance(tint, list) or len(tint) != 3:
+                raise ValueError("variations.materials.felt_tint_ranges must contain RGB ranges")
+            for axis in tint:
+                _range({"axis": axis}, "axis", minimum=.5, maximum=1.2)
+        if not 0 <= variations.get("hand_occlusion_probability", 0) <= .05:
+            raise ValueError("variations.hand_occlusion_probability must be between 0 and 0.05")
         counts = variations["hand"]["count_options"]
         if counts != [13, 14]:
             raise ValueError("variations.hand.count_options must be [13, 14]")

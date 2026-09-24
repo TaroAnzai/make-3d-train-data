@@ -27,7 +27,12 @@ def generate_scene(config: dict, index: int = 0) -> SceneDescription:
         focus_distance=float(camera_cfg.get("focus_distance", 10.0)),
         aperture_fstop=float(camera_cfg.get("aperture_fstop", 5.6)),
     )
-    lighting = LightingDescription(_uniform(rng, lighting_cfg["intensity_range"]))
+    lighting = LightingDescription(
+        intensity=_uniform(rng, lighting_cfg["intensity_range"]),
+        key_position=tuple(_uniform(rng, axis) for axis in lighting_cfg.get("key_position_ranges", [[-.35, -.35], [-.25, -.25], [.8, .8]])),
+        fill_position=tuple(_uniform(rng, axis) for axis in lighting_cfg.get("fill_position_ranges", [[.35, .35], [.2, .2], [.55, .55]])),
+        color_temperature=_uniform(rng, lighting_cfg.get("color_temperature_range", [5000, 5000])),
+    )
     annotation_groups = config["variations"]["annotation_groups"] if config.get("variations", {}).get("enabled") else None
     tiles = _fixed_tiles(fixed_tiles, annotation_groups) if scene_cfg["mode"] == "fixed" else _random_tiles(rng, tiles_cfg)
     background = dict(scene_cfg.get("background", {}))
@@ -35,7 +40,27 @@ def generate_scene(config: dict, index: int = 0) -> SceneDescription:
     if background.get("enabled"):
         candidates = sorted(p for p in Path(background.get("path", "")).glob("*") if p.suffix.lower() in {".jpg", ".jpeg", ".png"})
         background["selected"] = str(rng.choice(candidates).resolve()) if candidates else None
-    return SceneDescription(seed, scene_cfg["mode"], tiles, camera, lighting, background, dict(noise_cfg))
+    appearance = {}
+    occlusion = {}
+    if scene_cfg["mode"] == "fixed" and config.get("variations", {}).get("enabled"):
+        spec = config["variations"]
+        material = spec.get("materials", {})
+        if material:
+            appearance = {
+                "tile_roughness": _uniform(rng, material["tile_roughness_range"]),
+                "tile_specular": _uniform(rng, material["tile_specular_range"]),
+                "felt_tint": [_uniform(rng, axis) for axis in material["felt_tint_ranges"]],
+                "felt_brightness": _uniform(rng, material["felt_brightness_range"]),
+                "felt_roughness": _uniform(rng, material["felt_roughness_range"]),
+                "felt_texture_strength": _uniform(rng, material["felt_texture_strength_range"]),
+            }
+        if rng.random() < spec.get("hand_occlusion_probability", 0):
+            hand = [tile for tile in tiles if tile.annotate]
+            if hand:
+                target = rng.choice(hand)
+                occlusion = {"kind": "fingertip", "x": target.x, "y": target.y,
+                             "rotation_x": target.rotation_x, "side": rng.choice((-1, 1))}
+    return SceneDescription(seed, scene_cfg["mode"], tiles, camera, lighting, background, dict(noise_cfg), appearance, occlusion)
 
 def generate_scenes(config: dict, count: int | None = None):
     return [generate_scene(config, i) for i in range(count if count is not None else config["output"]["count"])]
