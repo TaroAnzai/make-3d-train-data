@@ -6,7 +6,7 @@ output:
   dataset_name: photo_34344494
   image_width: 640
   image_height: 480
-  count: 100
+  count: 3000
   formats: [coco, yolo]
 blender: {binary: null, samples: 32, engine: BLENDER_EEVEE}
 assets:
