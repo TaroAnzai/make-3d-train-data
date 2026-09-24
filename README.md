@@ -26,9 +26,9 @@ python -m make_3d_train_data config validate configs/default.yaml
 python -m make_3d_train_data scene preview --config configs/default.yaml --count 3
 python -m make_3d_train_data generate --config configs/fixed_sample.yaml
 python -m make_3d_train_data generate --config configs/reference_table.yaml
-python -m make_3d_train_data generate --config configs/photo_34344494.yaml
 python -m make_3d_train_data generate --config configs/default_one.yaml
 python -m make_3d_train_data generate --config configs/default.yaml
+python -m make_3d_train_data generate --config configs/default_random.yaml
 ```
 
 Blender の探索順は `--blender-bin`、`BLENDER_BIN`、YAML の `blender.binary`、`PATH` 上の `blender` です。未検出時の `generate` は traceback ではなく対処方法を含むエラーを返します。
@@ -55,14 +55,15 @@ Blender 5.2.2 LTSではEEVEEのengine IDは `BLENDER_EEVEE` です。レンダ�
 - `configs/hard_cases.yaml`: 小牌、密集、重なり、斜め視点、端切れ、暗所、blur を強化しています。
 - `configs/fixed_sample.yaml`: 3枚の牌を固定配置する1枚確認用シーンです。
 - `configs/reference_table.yaml`: master マット上に、手前の立てた手牌、橙色の伏せ牌壁、中央と奥の捨て牌を固定配置する1枚確認用シーンです。
-- `configs/photo_34344494.yaml`: 写真を基準にした変化付きシーンです。手牌は13/14枚を交互に生成し、画像ごとに立てた手牌と表向きに寝かせた手牌を選びます。37牌種の出現回数を全画像でほぼ均等にします。撮影条件と背景は `variations` の確率・範囲で変化します。背景の牌は描画されますが、COCO/YOLO のラベルには手牌だけを含めます。
+- `configs/default.yaml`: 写真を基準にした変化付きシーンです。手牌は13/14枚を交互に生成し、画像ごとに立てた手牌と表向きに寝かせた手牌を選びます。37牌種の出現回数を全画像でほぼ均等にします。撮影条件と背景は `variations` の確率・範囲で変化します。背景の牌は描画されますが、COCO/YOLO のラベルには手牌だけを含めます。
+- `configs/default_random.yaml`: 以前の `default.yaml` のランダム配置設定です。変更前の内容をそのまま残しています。
+- `configs/default_one.yaml`: `default_random.yaml` と同じ seed・ランダム配置・描画条件で最初の1枚だけ生成し、`output/sample_one_v001/` に保存します。
 
 ### 写真ベース設定のランダム化項目
 
-`configs/photo_34344494.yaml` の各画像では、手牌の牌種・枚数・向き・位置・間隔・回転、カメラ距離と傾きを変えます。カメラの yaw・roll・注視点、明るさ・コントラストは各項目80%の確率で、JPEG品質・捨て牌・牌山は各項目50%の確率で変えます。ぼかしは約13.5%の画像に適用されます。
+`configs/default.yaml` の各画像では、手牌の牌種・枚数・向き・位置・間隔・回転、カメラ距離と傾きを変えます。カメラの yaw・roll・注視点、明るさ・コントラストは各項目80%の確率で、JPEG品質・捨て牌・牌山は各項目50%の確率で変えます。ぼかしは約13.5%の画像に適用されます。
 
 牌の `roughness` と `specular`、照明の光源位置・強度・色温度（4000〜6200 K）、フェルトの緑系の色・明るさ・粗さ・微細なムラは**毎画像**変えます。反射と色の範囲は牌の模様を読み取れる室内撮影を想定しています。手牌の1枚の端にかかる小さな指先は約1%の画像にのみ追加します。これらの値と遮蔽の有無は manifest に記録します。
-- `configs/default_one.yaml`: `default.yaml` と同じ seed・ランダム配置・描画条件で最初の1枚だけ生成し、`output/sample_one_v001/` に保存します。
 
 `scene preview` は Blender を起動せず、通常 Python が作る JSON を表示します。実レンダリング時も一時 JSON を Blender に渡し、Blender が画像と投影結果 JSON を返します。通常コードは `bpy` を import しません。
 

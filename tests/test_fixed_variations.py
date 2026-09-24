@@ -5,7 +5,7 @@ from make_3d_train_data.scene_generator import generate_scene, generate_scenes
 
 
 def test_photo_variations_balance_hand_across_100_images():
-    cfg = load_config("configs/photo_34344494.yaml")
+    cfg = load_config("configs/default.yaml")
     scenes = generate_scenes(cfg, 100)
     hands = [[tile for tile in scene.tiles if tile.annotate] for scene in scenes]
     assert [len(hand) for hand in hands] == [13, 14] * 50
@@ -30,7 +30,7 @@ def test_photo_variations_balance_hand_across_100_images():
 
 
 def test_photo_variations_reproducible_and_preserve_indicator():
-    cfg = load_config("configs/photo_34344494.yaml")
+    cfg = load_config("configs/default.yaml")
     first = generate_scene(cfg, 7)
     assert first.to_dict() == generate_scene(cfg, 7).to_dict()
     assert any(tile.class_name == "1s" and tile.z == 0.0165
@@ -39,7 +39,7 @@ def test_photo_variations_reproducible_and_preserve_indicator():
 
 
 def test_photo_occlusion_can_be_enabled_without_changing_labels():
-    cfg = load_config("configs/photo_34344494.yaml")
+    cfg = load_config("configs/default.yaml")
     cfg["variations"]["hand_occlusion_probability"] = 1
     scene = generate_scene(cfg, 0)
     assert scene.occlusion["kind"] == "fingertip"
