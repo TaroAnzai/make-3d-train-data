@@ -27,11 +27,12 @@ python -m make_3d_train_data scene preview --config configs/default.yaml --count
 python -m make_3d_train_data generate --config configs/fixed_sample.yaml
 python -m make_3d_train_data generate --config configs/reference_table.yaml
 python -m make_3d_train_data generate --config configs/default_one.yaml
-python -m make_3d_train_data generate --config configs/default.yaml
+python -m make_3d_train_data generate --config configs/default.yaml --count 10
 python -m make_3d_train_data generate --config configs/default_random.yaml
 ```
 
 Blender の探索順は `--blender-bin`、`BLENDER_BIN`、YAML の `blender.binary`、`PATH` 上の `blender` です。未検出時の `generate` は traceback ではなく対処方法を含むエラーを返します。
+`generate --count` で生成枚数を指定すると、YAML の `output.count` より優先されます。省略時は YAML の値を使用します。
 
 ```bash
 command -v blender

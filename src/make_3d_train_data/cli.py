@@ -13,7 +13,7 @@ def parser():
     t=sub.add_parser("textures"); ts=t.add_subparsers(dest="action",required=True); tg=ts.add_parser("generate"); tg.add_argument("--output",default="assets/generated/textures")
     c=sub.add_parser("config"); cs=c.add_subparsers(dest="action",required=True); cv=cs.add_parser("validate"); cv.add_argument("config")
     s=sub.add_parser("scene"); ss=s.add_subparsers(dest="action",required=True); sp=ss.add_parser("preview"); sp.add_argument("--config",required=True); sp.add_argument("--count",type=int,default=1); sp.add_argument("--output")
-    g=sub.add_parser("generate"); g.add_argument("--config",required=True); g.add_argument("--blender-bin")
+    g=sub.add_parser("generate"); g.add_argument("--config",required=True); g.add_argument("--blender-bin"); g.add_argument("--count",type=int)
     return p
 
 def main(argv=None):
@@ -26,8 +26,12 @@ def main(argv=None):
             data=[s.to_dict() for s in generate_scenes(load_config(args.config),args.count)]; text=json.dumps(data,ensure_ascii=False,indent=2)
             if args.output: Path(args.output).write_text(text+"\n",encoding="utf-8"); print(f"Wrote {len(data)} scenes to {args.output}")
             else: print(text)
-        elif args.command=="generate": print(f"Dataset generated: {build_dataset(load_config(args.config),args.blender_bin)}")
+        elif args.command=="generate":
+            cfg=load_config(args.config)
+            if args.count is not None:
+                if args.count <= 0: raise ValueError("--count must be a positive integer")
+                cfg["output"]["count"]=args.count
+            print(f"Dataset generated: {build_dataset(cfg,args.blender_bin)}")
         return 0
     except (ValueError,BlenderNotFoundError,BlenderRenderError) as exc:
         print(f"Error: {exc}",file=sys.stderr); return 2
-
