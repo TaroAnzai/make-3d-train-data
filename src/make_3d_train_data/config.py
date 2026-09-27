@@ -7,7 +7,7 @@ from .class_defs import resolve_class
 
 DEFAULTS: dict[str, Any] = {
     "general": {"seed": 12345},
-    "output": {"root": "./output", "dataset_name": "dataset", "image_width": 1280, "image_height": 720, "count": 1, "formats": ["coco"]},
+    "output": {"root": "~/3d-train-data", "image_width": 1280, "image_height": 720, "count": 1, "formats": ["coco"]},
     "blender": {"binary": None, "samples": 32, "engine": "BLENDER_EEVEE"},
     "assets": {"tile_blend": "./assets/blender/tiles_master.blend", "mat_blend": "./assets/masters/table_assets.blend"},
     "scene": {"mode": "random", "background": {"enabled": False, "path": "./assets/backgrounds"}, "camera": {"distance_range": [6, 10], "tilt_deg_range": [40, 80], "yaw_deg_range": [-25, 25], "roll_deg_range": [-5, 5]}, "lighting": {"intensity_range": [0.7, 1.5]}},

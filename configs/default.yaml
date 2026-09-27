@@ -1,12 +1,11 @@
 # Inspired by external/photo_sample/34344494_s.jpg (640 x 480).
 # Coordinates are metres on the 690 mm square mahjong mat.
-general: {seed: 34344494}
+general: {seed: 34345394}
 output:
-  root: ./output
-  dataset_name: sample_v001
+  root: ~/3d-train-data
   image_width: 640
   image_height: 480
-  count: 3000
+  count: 2000
   formats: [coco, yolo]
 blender: {binary: null, samples: 32, engine: BLENDER_EEVEE}
 assets:

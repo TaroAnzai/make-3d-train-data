@@ -1,7 +1,6 @@
 general: {seed: 98765}
 output:
-  root: ./output
-  dataset_name: hard_cases_v001
+  root: ~/3d-train-data
   image_width: 1280
   image_height: 720
   count: 200

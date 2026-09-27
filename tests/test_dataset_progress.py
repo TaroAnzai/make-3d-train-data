@@ -11,7 +11,7 @@ def test_generate_shows_completed_images_in_progress_bar(tmp_path, capsys):
     cfg["output"].update(root=str(tmp_path), count=2)
 
     def render_stub(scene, config, scene_path, result_path, image_path, blender_bin):
-        Image.new("RGB", (8, 8)).save(image_path)
+        Image.new("RGB", (8, 8), (scene.seed % 256, (scene.seed // 256) % 256, 32)).save(image_path)
         return {"annotations": []}
 
     with patch("make_3d_train_data.dataset_builder.render_scene", side_effect=render_stub):
@@ -23,3 +23,4 @@ def test_generate_shows_completed_images_in_progress_bar(tmp_path, capsys):
     assert (root / "images/000001.jpg").is_file()
     assert (root / "images/000002.jpg").is_file()
     assert len((root / "meta/manifest.jsonl").read_text().splitlines()) == 2
+    assert (root / "annotations/instances.json").is_file()

@@ -6,8 +6,8 @@ from .models import CameraDescription, LightingDescription, SceneDescription, Ti
 
 def _uniform(rng: random.Random, values): return rng.uniform(float(values[0]), float(values[1]))
 
-def generate_scene(config: dict, index: int = 0) -> SceneDescription:
-    seed = int(config["general"]["seed"]) + index
+def generate_scene(config: dict, index: int = 0, *, seed: int | None = None) -> SceneDescription:
+    seed = int(config["general"]["seed"]) + index if seed is None else seed
     rng = random.Random(seed)
     scene_cfg, tiles_cfg = config["scene"], config["tiles"]
     fixed_tiles = config.get("tiles_fixed", [])

@@ -1,8 +1,7 @@
 general:
   seed: 12345
 output:
-  root: ./output
-  dataset_name: sample_v001
+  root: ~/3d-train-data
   image_width: 1280
   image_height: 720
   count: 3000

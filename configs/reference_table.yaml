@@ -1,7 +1,6 @@
 general: {seed: 34344494}
 output:
-  root: ./output
-  dataset_name: reference_table
+  root: ~/3d-train-data
   image_width: 960
   image_height: 720
   count: 1

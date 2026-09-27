@@ -15,6 +15,6 @@ def test_fixed_render(tmp_path):
     cfg["blender"]["samples"] = 8
     root = build_dataset(cfg)
     assert (root / "images/000001.jpg").stat().st_size > 0
-    coco = json.loads((root / "labels/instances.json").read_text())
+    coco = json.loads((root / "annotations/instances.json").read_text())
     assert [item["category_id"] for item in coco["annotations"]] == [1, 28, 36]
-    assert len((root / "labels/yolo/000001.txt").read_text().splitlines()) == 3
+    assert len((root / "annotations/yolo/000001.txt").read_text().splitlines()) == 3

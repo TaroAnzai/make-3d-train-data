@@ -49,7 +49,7 @@ Blender 5.2.2 LTSではEEVEEのengine IDは `BLENDER_EEVEE` です。レンダ�
 
 ## 設定とシーン
 
-設定は YAML です。`general.seed + 画像 index` が各シーンの seed なので、同じ設定から同じ `SceneDescription` が得られます。牌の座標、カメラ距離、マットの寸法はメートル単位です。マットは690 mm四方、牌の標準寸法は約20 × 28 × 16.5 mmです。`z: 0` はフェルト面に接地する高さで、回転させた牌も最も低い点をフェルト面に合わせます。
+設定は YAML です。`scene preview` は `general.seed + 画像 index` を使うため、同じ設定から同じ `SceneDescription` が得られます。`generate` は設定の seed、出力フォルダーの連番、画像ごとの試行番号を組み合わせて seed を作ります。同じ設定で再実行しても異なる画像を生成し、出力先にある既存データセットと JPEG 内容が重複した場合は再描画します。牌の座標、カメラ距離、マットの寸法はメートル単位です。マットは690 mm四方、牌の標準寸法は約20 × 28 × 16.5 mmです。`z: 0` はフェルト面に接地する高さで、回転させた牌も最も低い点をフェルト面に合わせます。
 
 - `fixed`: `tiles_fixed` の class、3D 位置、回転、scale をそのまま使用します。
 - `random`: 牌種/枚数/XYZ/回転/scale/密集/重なり/端切れ/小牌、カメラ距離・tilt/yaw/roll、照明を乱数化します。
@@ -59,7 +59,7 @@ Blender 5.2.2 LTSではEEVEEのengine IDは `BLENDER_EEVEE` です。レンダ�
 - `configs/reference_table.yaml`: master マット上に、手前の立てた手牌、橙色の伏せ牌壁、中央と奥の捨て牌を固定配置する1枚確認用シーンです。
 - `configs/default.yaml`: 写真を基準にした変化付きシーンです。手牌は13/14枚を交互に生成し、画像ごとに立てた手牌と表向きに寝かせた手牌を選びます。37牌種の出現回数を全画像でほぼ均等にします。撮影条件と背景は `variations` の確率・範囲で変化します。背景の牌は描画されますが、COCO/YOLO のラベルには手牌だけを含めます。
 - `configs/default_random.yaml`: 以前の `default.yaml` のランダム配置設定です。変更前の内容をそのまま残しています。
-- `configs/default_one.yaml`: `default_random.yaml` と同じ seed・ランダム配置・描画条件で最初の1枚だけ生成し、`output/sample_one_v001/` に保存します。
+- `configs/default_one.yaml`: `default_random.yaml` と同じランダム配置・描画条件で1枚生成します。
 
 ### 写真ベース設定のランダム化項目
 
@@ -82,9 +82,10 @@ ID は固定です: `1..9 = 1m..9m`、`10..18 = 1p..9p`、`19..27 = 1s..9s`、`2
 ## 出力
 
 ```text
-output/<dataset_name>/
+~/3d-train-data/default-01-500/
+├── dataset.yaml
 ├── images/000001.jpg
-├── labels/
+├── annotations/
 │   ├── instances.json
 │   └── yolo/000001.txt
 └── meta/
@@ -93,6 +94,8 @@ output/<dataset_name>/
     ├── classes.json
     └── used_config.yaml
 ```
+
+フォルダー名は `<設定ファイル名>-<連番>-<生成枚数>` です。連番は同じ設定ファイル名の既存データセットから最大値を調べて決めます。出力先は YAML の `output.root` で変更できます。`dataset.yaml` には `name: cg_YYYYMMDD_NNN`、`format: coco`、`class_schema: canonical37` を記録します。COCO は必ず出力し、YOLO は `output.formats` に `yolo` がある場合に出力します。
 
 COCO は全 37 categories と、画像ごとの pixel `xywh`、area を保存します。YOLO は正規化 `cx cy width height` を保存します。manifest は画像、seed、サイズ、mode、牌 class/canonical ID、`bbox_xyxy`/`bbox_xywh`、3D 位置、回転、scale、カメラ、照明、背景を 1 画像 1 行で保存します。
 
